@@ -10,7 +10,7 @@ class CustomerService {
         const customer = {
             name: payload.name,
             email: payload.email,
-            address: payload.address,
+            password: payload.password,
             phone: payload.phone,
         };
         // Remove undefined fields
@@ -65,13 +65,16 @@ class CustomerService {
         });
         return result.value;
     }
-        
-    
 
     async deleteAll() {
         const result = await this.Customer.deleteMany({});
         return result.deletedCount;
     }
+
+    async findByEmail(email) {
+        return await this.Customer.findOne({email});
+    } 
 }
+
 
 module.exports = CustomerService;

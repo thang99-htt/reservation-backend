@@ -118,3 +118,29 @@ exports.deleteAll = async(req, res, next) => {
     }
 };
 
+// Login
+exports.login = async(req, res, next) => {
+    if (!req.body?.email || !req.body?.password) {
+        return next(new ApiError(400, "Field can not be empty."));
+    }
+
+    try {
+        const customerService = new CustomerService(MongoDB.client);
+        const customer = await customerService.findByEmail(req.body.email);
+
+        if (!customer) {
+            return next(new ApiError(404, "Customer not found."));
+        }
+        if(req.body.password == customer.password)
+            return res.send(customer);
+        else 
+            return res.send({ message: "Email or password is invalid."});
+    } catch (error) {
+        return next(
+            new ApiError(
+                500,
+                `Error login with email=${req.body.email}`
+            )
+        );
+    }
+};

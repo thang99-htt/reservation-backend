@@ -8,10 +8,12 @@ router.route("/")
     .post(customers.create)
     .delete(customers.deleteAll);
 
-
 router.route("/:id") 
     .get(customers.findOne)
     .put(customers.update)
     .delete(customers.delete);
+
+router.route("/login")
+    .post(customers.login);
 
 module.exports = router;
