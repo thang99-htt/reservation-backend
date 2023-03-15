@@ -8,6 +8,9 @@ router.route("/")
     .post(rooms.create)
     .delete(rooms.deleteAll);
 
+router.route("/available")
+    .get(rooms.findAllAvailable);
+
 router.route("/:id") 
     .get(rooms.findOne)
     .put(rooms.update)

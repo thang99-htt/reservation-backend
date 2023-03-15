@@ -117,3 +117,20 @@ exports.deleteAll = async(req, res, next) => {
         );
     }
 };
+
+
+// Find all available rooms of a user
+exports.findAllAvailable = async(req, res, next) => {
+    try {
+        const roomService = new RoomService(MongoDB.client);
+        const document = await roomService.findAvailable();
+        return res.send(document);
+    } catch (error) {
+        return next(
+            new ApiError(
+                500,
+                "An error occurred while retrieving available rooms"
+            )
+        );
+    }
+};

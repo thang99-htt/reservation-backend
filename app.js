@@ -2,7 +2,9 @@ const express = require("express");
 const cors = require("cors");
 
 const roomsRouter = require("./app/routes/room.route");
+const customersRouter = require("./app/routes/customer.route");
 const ApiError = require("./app/api-error");
+
 const app = express();
 
 app.use(cors());
@@ -14,7 +16,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/rooms", roomsRouter);
-
+app.use("/api/customers", customersRouter);
 
 // handle 404 response
 app.use((req, res, next) => {

@@ -1,37 +1,37 @@
 const { ObjectId } = require("mongodb");
 
-class RoomService {
+class CustomerService {
     constructor(client) {
-        this.Room = client.db().collection("rooms");
+        this.Customer = client.db().collection("customers");
     }
 
     // Định nghĩa các phương thức truy xuất CSDL sử dụng mongodb API
-    extractRoomData(payload) {
-        const room = {
+    extractCustomerData(payload) {
+        const customer = {
             name: payload.name,
-            type: payload.type,
-            price: payload.price,
-            is_available : payload.is_available ,
+            email: payload.email,
+            address: payload.address,
+            phone: payload.phone,
         };
         // Remove undefined fields
-        Object.keys(room).forEach(
-            (key) => room[key] === undefined && delete room[key]
+        Object.keys(customer).forEach(
+            (key) => customer[key] === undefined && delete customer[key]
         );
-        return room;
+        return customer;
     }
 
     async create(payload) {
-        const room = this.extractRoomData(payload);
-        const result = await this.Room.findOneAndUpdate(
-            room,
-            { $set: { is_available : true } },
+        const customer = this.extractCustomerData(payload);
+        const result = await this.Customer.findOneAndUpdate(
+            customer,
+            { $set: customer },
             { returnDocument: "after", upsert: true }
         );
         return result.value;
     }
 
     async find(filter) {
-        const cursor = await this.Room.find(filter);
+        const cursor = await this.Customer.find(filter);
         return await cursor.toArray();
     }
     async findByName(name) {
@@ -41,7 +41,7 @@ class RoomService {
     }
 
     async findById(id) {
-        return await this.Room.findOne({
+        return await this.Customer.findOne({
             _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
         });
     }  
@@ -50,8 +50,8 @@ class RoomService {
         const filter = {
             _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
         };
-        const update = this.extractRoomData(payload);
-        const result = await this.Room.findOneAndUpdate(
+        const update = this.extractCustomerData(payload);
+        const result = await this.Customer.findOneAndUpdate(
             filter,
             { $set: update },
             { returnDocument: "after" }
@@ -60,20 +60,18 @@ class RoomService {
     }
 
     async delete(id) {
-        const result = await this.Room.findOneAndDelete({
+        const result = await this.Customer.findOneAndDelete({
             _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
         });
         return result.value;
     }
+        
+    
 
     async deleteAll() {
-        const result = await this.Room.deleteMany({});
+        const result = await this.Customer.deleteMany({});
         return result.deletedCount;
-    }
-
-    async findAvailable() {
-        return await this.find({ is_available: true });
     }
 }
 
-module.exports = RoomService;
+module.exports = CustomerService;
