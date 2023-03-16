@@ -4,8 +4,8 @@ const ApiError = require("../api-error");
 
 // Create and Save a new room
 exports.create = async(req, res, next) => {
-    if (!req.body?.name) {
-        return next(new ApiError(400, "Name can not be empty"));
+    if (!req.body?.name || !req.body?.type || !req.body?.price) {
+        return next(new ApiError(400, "Field can not be empty"));
     }
     try {
         const roomService = new RoomService(MongoDB.client);
@@ -19,7 +19,7 @@ exports.create = async(req, res, next) => {
     }
 };
 
-// Retrieve all rooms of a user from the database
+// Retrieve all rooms from the database
 exports.findAll = async(req, res, next) => {
     let documents = [];
 
@@ -84,6 +84,25 @@ exports.update = async(req, res, next) => {
     }
 };
 
+// Update a room by the id in the request
+exports.updateAvailable = async(req, res, next) => {
+    try {
+        const roomService = new RoomService(MongoDB.client);
+        const document = await roomService.updateAvailable(req.params.id);
+        if (!document) {
+            return next(new ApiError(404, "Room not found"));
+        }
+        return res.send({ message: document});
+    } catch (error) {
+        return next(
+            new ApiError(
+                500,
+                `Error updating room with id=${req.params.id}`
+            )
+        );
+    }
+};
+
 // Delete a room with the specified id in the request
 exports.delete = async(req, res, next) => {
     try {
@@ -103,7 +122,7 @@ exports.delete = async(req, res, next) => {
     }
 };
 
-// Delete all rooms of a user from the database
+// Delete all rooms from the database
 exports.deleteAll = async(req, res, next) => {
     try {
         const roomService = new RoomService(MongoDB.client);
@@ -119,7 +138,7 @@ exports.deleteAll = async(req, res, next) => {
 };
 
 
-// Find all available rooms of a user
+// Find all available rooms
 exports.findAllAvailable = async(req, res, next) => {
     try {
         const roomService = new RoomService(MongoDB.client);

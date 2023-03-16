@@ -11,7 +11,7 @@ class RoomService {
             name: payload.name,
             type: payload.type,
             price: payload.price,
-            is_available : payload.is_available ,
+            is_available : payload.is_available,
         };
         // Remove undefined fields
         Object.keys(room).forEach(
@@ -44,7 +44,7 @@ class RoomService {
         return await this.Room.findOne({
             _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
         });
-    }  
+    }   
 
     async update(id, payload) {
         const filter = {
@@ -54,6 +54,18 @@ class RoomService {
         const result = await this.Room.findOneAndUpdate(
             filter,
             { $set: update },
+            { returnDocument: "after" }
+        );
+        return result.value;
+    }
+
+    async updateAvailable(id) {
+        const room =  await this.Room.findOne({
+            _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
+        });
+        const result = await this.Room.findOneAndUpdate(
+            room,
+            { $set: {is_available: false} },
             { returnDocument: "after" }
         );
         return result.value;

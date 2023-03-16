@@ -1,8 +1,9 @@
 const express = require("express");
 const cors = require("cors");
 
-const roomsRouter = require("./app/routes/room.route");
 const customersRouter = require("./app/routes/customer.route");
+const roomsRouter = require("./app/routes/room.route");
+const bookingsRouter = require("./app/routes/booking.route");
 const ApiError = require("./app/api-error");
 
 const app = express();
@@ -15,8 +16,9 @@ app.get("/", (req, res) => {
     res.json({ message: "Welcome to Hotel Reservation Booking App."});
 });
 
-app.use("/api/rooms", roomsRouter);
 app.use("/api/customers", customersRouter);
+app.use("/api/rooms", roomsRouter);
+app.use("/api/bookings", bookingsRouter);
 
 // handle 404 response
 app.use((req, res, next) => {

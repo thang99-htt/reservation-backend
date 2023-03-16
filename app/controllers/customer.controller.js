@@ -4,8 +4,8 @@ const ApiError = require("../api-error");
 
 // Create and Save a new Customer
 exports.create = async(req, res, next) => {
-    if (!req.body?.name) {
-        return next(new ApiError(400, "Name can not be empty"));
+    if (!req.body?.name || !req.body?.email || !req.body?.phone || !req.body?.id_card) {
+        return next(new ApiError(400, "Field can not be empty"));
     }
     try {
         const customerService = new CustomerService(MongoDB.client);
@@ -19,7 +19,7 @@ exports.create = async(req, res, next) => {
     }
 };
 
-// Retrieve all customers of a user from the database
+// Retrieve all customers from the database
 exports.findAll = async(req, res, next) => {
     let documents = [];
 
@@ -103,7 +103,7 @@ exports.delete = async(req, res, next) => {
     }
 };
 
-// Delete all customers of a user from the database
+// Delete all customers from the database
 exports.deleteAll = async(req, res, next) => {
     try {
         const customerService = new CustomerService(MongoDB.client);

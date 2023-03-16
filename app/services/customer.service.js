@@ -10,8 +10,9 @@ class CustomerService {
         const customer = {
             name: payload.name,
             email: payload.email,
-            password: payload.password,
             phone: payload.phone,
+            // password: payload.password
+            id_card: payload.id_card,
         };
         // Remove undefined fields
         Object.keys(customer).forEach(
