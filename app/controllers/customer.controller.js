@@ -4,7 +4,7 @@ const ApiError = require("../api-error");
 
 // Create and Save a new Customer
 exports.create = async(req, res, next) => {
-    if (!req.body?.name || !req.body?.email || !req.body?.phone || !req.body?.id_card) {
+    if (!req.body?.name || !req.body?.email || !req.body?.phone) {
         return next(new ApiError(400, "Field can not be empty"));
     }
     try {

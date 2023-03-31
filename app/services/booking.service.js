@@ -3,13 +3,14 @@ const { ObjectId } = require("mongodb");
 class BookingService {
     constructor(client) {
         this.Booking = client.db().collection("bookings");
+        this.Room = client.db().collection("rooms");
     }
 
     // Định nghĩa các phương thức truy xuất CSDL sử dụng mongodb API
     extractBookingData(payload) {
         const booking = {
-            room_id: payload.room_id,
-            customer_id: payload.customer_id,
+            room_id: new ObjectId(payload.room_id),
+            customer_id: new ObjectId (payload.customer_id),
             checkin_date: payload.checkin_date,
             checkout_date: payload.checkout_date,
             num_of_guests: payload.num_of_guests,
@@ -32,10 +33,54 @@ class BookingService {
         return result.value;
     }
 
+    // async find(filter) {
+    //     const cursor = await this.Booking.find(filter);
+    //     return await cursor.toArray();
+    // }
+
     async find(filter) {
-        const cursor = await this.Booking.find(filter);
+        const cursor = await this.Booking.aggregate([
+            {
+                $match: filter
+            },
+            {
+                $lookup: {
+                    from: "rooms",
+                    localField: "room_id",
+                    foreignField: "_id",
+                    as: "room",
+                },
+            },
+            {
+                $lookup: {
+                    from: "customers",
+                    localField: "customer_id",
+                    foreignField: "_id",
+                    as: "customer",
+                }
+            },
+            {
+                $unwind: "$room"
+            },
+            {
+                $unwind: "$customer"
+            },
+            {
+                $project: {
+                    "_id": 0,
+                    "customer_id": 1,
+                    "checkin_date": 1,
+                    "checkout_date": 1,
+                    "num_of_guests": 1,
+                    "total_price": 1,
+                    "room_name": "$room.name",
+                    "customer_name": "$customer.name"
+                }
+            }
+        ]);
         return await cursor.toArray();
     }
+
     async findByName(name) {
         return await this.find({
             name: { $regex: new RegExp(name), $options: "i" },

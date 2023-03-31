@@ -11,6 +11,7 @@ class RoomService {
             name: payload.name,
             type: payload.type,
             price: payload.price,
+            capacity: payload.capacity,
             is_available : payload.is_available,
         };
         // Remove undefined fields

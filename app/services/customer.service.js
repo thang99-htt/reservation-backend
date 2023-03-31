@@ -12,7 +12,6 @@ class CustomerService {
             email: payload.email,
             phone: payload.phone,
             // password: payload.password
-            id_card: payload.id_card,
         };
         // Remove undefined fields
         Object.keys(customer).forEach(
