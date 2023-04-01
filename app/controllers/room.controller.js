@@ -25,12 +25,17 @@ exports.findAll = async(req, res, next) => {
 
     try {
         const roomService = new RoomService(MongoDB.client);
-        const { name } = req.query;
-        if (name) {
-            documents = await roomService.findByName(name);
+        const { capacity, type } = req.query;
+        if (capacity && type) {
+            documents = await roomService.findByCapacityAndType(capacity, type);
+        } else if (capacity) {
+            documents = await roomService.findByCapacity(capacity);
+        } else if (type) {
+            documents = await roomService.findByType(type);
         } else {
             documents = await roomService.find({});
         }
+
     } catch (error) {
         return next( 
             new ApiError(500, "An error occurred while retrieving rooms")

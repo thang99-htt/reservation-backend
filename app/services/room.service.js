@@ -41,6 +41,19 @@ class RoomService {
         });
     }
 
+    async findByCapacity(capacity) {
+        return await this.find({
+            capacity: { $gte: parseInt(capacity) },
+        });
+    }
+
+    async findByCapacityAndType(capacity, type) {
+        return await this.find({
+            capacity: { $gte: parseInt(capacity) },
+            type: { $regex: new RegExp(type), $options: "i" },
+        });
+    }    
+
     async findById(id) {
         return await this.Room.findOne({
             _id: ObjectId.isValid(id) ? new ObjectId(id) : null,

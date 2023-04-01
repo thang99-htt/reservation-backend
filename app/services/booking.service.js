@@ -15,6 +15,7 @@ class BookingService {
             checkout_date: payload.checkout_date,
             num_of_guests: payload.num_of_guests,
             total_price : payload.total_price,
+            status : payload.status,
         };
         // Remove undefined fields
         Object.keys(booking).forEach(
@@ -67,12 +68,13 @@ class BookingService {
             },
             {
                 $project: {
-                    "_id": 0,
+                    "_id": 1,
                     "customer_id": 1,
                     "checkin_date": 1,
                     "checkout_date": 1,
                     "num_of_guests": 1,
                     "total_price": 1,
+                    "status": 1,
                     "room_name": "$room.name",
                     "customer_name": "$customer.name"
                 }
@@ -102,6 +104,29 @@ class BookingService {
             filter,
             { $set: update },
             { returnDocument: "after" }
+        );
+        return result.value;
+    }
+
+    async updateStatus(id) {
+        const filter = await this.Booking.findOne({
+            _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
+        });
+
+        let newStatus;
+        if(filter.status == 'Đang chờ xử lý') {
+            newStatus = 'Đã duyệt';
+        } else if(filter.status == 'Đã duyệt') {
+            newStatus = 'Đang sử dụng';
+        } else if(filter.status == 'Đang sử dụng') {
+            newStatus = 'Đã hoàn thành';
+        } 
+
+        const update = { status: newStatus };
+        const result = await this.Booking.findOneAndUpdate(
+          filter,
+          { $set: update },
+          { returnDocument: "after" }
         );
         return result.value;
     }

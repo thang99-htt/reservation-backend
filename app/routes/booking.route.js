@@ -16,4 +16,7 @@ router.route("/:id")
     .put(bookings.update)
     .delete(bookings.delete);
 
+router.route("/update-status/:id") 
+    .put(bookings.updateStatus);
+
 module.exports = router;
