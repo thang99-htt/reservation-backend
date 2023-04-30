@@ -5,7 +5,6 @@ const router = express.Router();
 
 router.route("/")
     .get(customers.findAll)
-    .post(customers.create)
     .delete(customers.deleteAll);
 
 router.route("/:id") 
@@ -15,5 +14,11 @@ router.route("/:id")
 
 router.route("/login")
     .post(customers.login);
+
+router.route("/register")
+    .post(customers.create);
+
+router.route("/update-status/:id") 
+    .put(customers.updateStatus);
 
 module.exports = router;

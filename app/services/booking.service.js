@@ -15,6 +15,7 @@ class BookingService {
             checkout_date: payload.checkout_date,
             num_of_guests: payload.num_of_guests,
             total_price : payload.total_price,
+            paid: payload.paid,
             status : payload.status,
         };
         // Remove undefined fields
@@ -74,9 +75,15 @@ class BookingService {
                     "checkout_date": 1,
                     "num_of_guests": 1,
                     "total_price": 1,
+                    "paid": 1,
                     "status": 1,
+                    "room_type": "$room.type",
                     "room_name": "$room.name",
-                    "customer_name": "$customer.name"
+                    "room_capacity": "$room.capacity",
+                    "room_price": "$room.price",
+                    "customer_name": "$customer.name",
+                    "customer_email": "$customer.email",
+                    "customer_phone": "$customer.phone"
                 }
             }
         ]);
@@ -109,27 +116,44 @@ class BookingService {
     }
 
     async updateStatus(id) {
-        const filter = await this.Booking.findOne({
-            _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
-        });
+        const bookingFilter = {
+          _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
+        };
+        const booking = await this.Booking.findOne(bookingFilter);
+
+        const roomFilter = {
+            _id: ObjectId.isValid(booking.room_id) ? new ObjectId(booking.room_id) : null,
+        };
+
+        const room = await this.Room.findOne(roomFilter);
 
         let newStatus;
-        if(filter.status == 'Đang chờ xử lý') {
-            newStatus = 'Đã duyệt';
-        } else if(filter.status == 'Đã duyệt') {
-            newStatus = 'Đang sử dụng';
-        } else if(filter.status == 'Đang sử dụng') {
-            newStatus = 'Đã hoàn thành';
+        let newPaid = false;
+        let isAvailable = false;
+        if (booking.status === "Đang chờ xử lý") {
+          newStatus = "Đã duyệt";
+        } else if (booking.status === "Đã duyệt") {
+          newStatus = "Đang sử dụng";
+        } else if (booking.status === "Đang sử dụng") {
+          newStatus = "Đã hoàn thành";
+          newPaid = true;
+          isAvailable = true;
         } 
-
-        const update = { status: newStatus };
+      
+        const update = { paid: newPaid, status: newStatus };
+        const update1 = { is_available: isAvailable };
         const result = await this.Booking.findOneAndUpdate(
-          filter,
+          bookingFilter,
           { $set: update },
           { returnDocument: "after" }
         );
+        const result1 = await this.Room.findOneAndUpdate(
+            roomFilter,
+            { $set: update1 },
+            { returnDocument: "after" }
+        );
         return result.value;
-    }
+    }            
 
     async delete(id) {
         const result = await this.Booking.findOneAndDelete({
@@ -146,6 +170,45 @@ class BookingService {
     async findAvailable() {
         return await this.find({ is_available: true });
     }
+
+    async findBookingByUser(id) {
+        const bookingFilter = {
+            customer_id: ObjectId.isValid(id) ? new ObjectId(id) : null,
+          };
+        return await this.find(bookingFilter);
+    } 
+
+    async cancleBooking(id) {
+        const bookingFilter = {
+          _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
+        };
+        const booking = await this.Booking.findOne(bookingFilter);
+
+        const roomFilter = {
+            _id: ObjectId.isValid(booking.room_id) ? new ObjectId(booking.room_id) : null,
+        };
+
+        const room = await this.Room.findOne(roomFilter);
+
+        let newStatus = "Đã hủy";
+        let isAvailable = true;
+        
+        const update = { status: newStatus };
+        const update1 = { is_available: isAvailable };
+
+        const result = await this.Booking.findOneAndUpdate(
+          bookingFilter,
+          { $set: update },
+          { returnDocument: "after" }
+        );
+        
+        const result1 = await this.Room.findOneAndUpdate(
+            roomFilter,
+            { $set: update1 },
+            { returnDocument: "after" }
+        );
+        return result.value;
+      }
 }
 
 module.exports = BookingService;

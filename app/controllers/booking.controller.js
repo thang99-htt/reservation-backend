@@ -174,3 +174,42 @@ exports.findAllAvailable = async(req, res, next) => {
         );
     }
 };
+
+
+// Find all bookings of a user
+exports.findAllBooking = async(req, res, next) => {
+    try {
+        const bookingService = new BookingService(MongoDB.client);
+        const document = await bookingService.findBookingByUser(req.params.id);
+        if (!document) {
+            return next(new ApiError(404, "Booking not found"));
+        }
+        return res.send(document);
+    } catch (error) {
+        return next(
+            new ApiError(
+                500,
+                `Error retrieving booking with user-id=${req.params.id}`
+            )
+        );
+    }
+};
+
+// Update a booking by the id in the request
+exports.cancleBooking = async(req, res, next) => {
+    try {
+        const bookingService = new BookingService(MongoDB.client);
+        const document = await bookingService.cancleBooking(req.params.id);
+        if (!document) {
+            return next(new ApiError(404, "Booking not found"));
+        }
+        return res.send(document);
+    } catch (error) {
+        return next(
+            new ApiError(
+                500,
+                `Error cancle book with id=${req.params.id}`
+            )
+        );
+    }
+};

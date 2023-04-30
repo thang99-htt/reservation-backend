@@ -4,6 +4,7 @@ const cors = require("cors");
 const customersRouter = require("./app/routes/customer.route");
 const roomsRouter = require("./app/routes/room.route");
 const bookingsRouter = require("./app/routes/booking.route");
+const authRouter = require("./app/routes/auth.route");
 const ApiError = require("./app/api-error");
 
 const app = express();
@@ -19,6 +20,7 @@ app.get("/", (req, res) => {
 app.use("/api/customers", customersRouter);
 app.use("/api/rooms", roomsRouter);
 app.use("/api/bookings", bookingsRouter);
+app.use("/api/admin/", authRouter);
 
 // handle 404 response
 app.use((req, res, next) => {

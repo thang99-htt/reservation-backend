@@ -21,28 +21,36 @@ exports.create = async(req, res, next) => {
 
 // Retrieve all rooms from the database
 exports.findAll = async(req, res, next) => {
-    let documents = [];
-
+    
     try {
+        let documents = [];
         const roomService = new RoomService(MongoDB.client);
-        const { capacity, type } = req.query;
-        if (capacity && type) {
+        const { capacity, type, status } = req.query;
+        if (capacity && type && status) {
+            documents = await roomService.findByCapacityAndTypeAndStatus(capacity, type, status);
+        } else if (capacity && type) {
             documents = await roomService.findByCapacityAndType(capacity, type);
+        } else if (capacity && status) {
+            documents = await roomService.findByCapacityAndStatus(capacity, status);
+        } else if (type && status) {
+            documents = await roomService.findByTypeAndStatus(type, status);
         } else if (capacity) {
             documents = await roomService.findByCapacity(capacity);
         } else if (type) {
             documents = await roomService.findByType(type);
+        } else if (status) {
+            documents = await roomService.findByStatus(status);
         } else {
             documents = await roomService.find({});
         }
-
+        
+        return res.send(documents);
     } catch (error) {
         return next( 
             new ApiError(500, "An error occurred while retrieving rooms")
         );
     }
 
-    return res.send(documents);
 };
 
 // Find a single room with an id

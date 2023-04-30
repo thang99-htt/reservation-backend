@@ -41,18 +41,52 @@ class RoomService {
         });
     }
 
-    async findByCapacity(capacity) {
+    async findByCapacityAndTypeAndStatus(capacity, type, status) {
         return await this.find({
             capacity: { $gte: parseInt(capacity) },
+            type: { $regex: new RegExp(type), $options: "i" },
+            is_available: status === "true",
         });
     }
+
+    async findByCapacityAndStatus(capacity, status) {
+        return await this.find({
+            capacity: { $gte: parseInt(capacity) },
+            is_available: status === "true",
+        });
+    } 
 
     async findByCapacityAndType(capacity, type) {
         return await this.find({
             capacity: { $gte: parseInt(capacity) },
             type: { $regex: new RegExp(type), $options: "i" },
         });
-    }    
+    }   
+
+    async findByTypeAndStatus(type, status) {
+        return await this.find({
+            type: { $regex: new RegExp(type), $options: "i" },
+            is_available: status === "true",
+        });
+    } 
+
+    async findByCapacity(capacity) {
+        return await this.find({
+            capacity: { $gte: parseInt(capacity) },
+        });
+    }
+    
+    async findByType(type) {
+        return await this.find({
+            type: { $regex: new RegExp(type), $options: "i" },
+        });
+    }
+
+    async findByStatus(status) {
+        return await this.find({
+            is_available: status === "true",
+        });
+    }      
 
     async findById(id) {
         return await this.Room.findOne({

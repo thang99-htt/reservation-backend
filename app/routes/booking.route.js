@@ -11,6 +11,12 @@ router.route("/")
 router.route("/available")
     .get(bookings.findAllAvailable);
 
+router.route("/user/:id")
+    .get(bookings.findAllBooking);
+
+router.route("/cancle/:id")
+    .put(bookings.cancleBooking);
+
 router.route("/:id") 
     .get(bookings.findOne)
     .put(bookings.update)
