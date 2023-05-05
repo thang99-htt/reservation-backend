@@ -30,7 +30,7 @@ class CustomerService {
         const customer = this.extractCustomerData(payload);
         const result = await this.Customer.findOneAndUpdate(
             customer,
-            { $set: customer },
+            { $set: { status : 1 } },
             { returnDocument: "after", upsert: true }
         );
         return result.value;
